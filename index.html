@@ -1,234 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080d19">
-<title>RS Image Host Pro</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-:root{--bg:#080d19;--panel:#111a2b;--panel2:#0c1423;--line:#25334a;--text:#edf4ff;--muted:#91a1ba;--accent:#6d7cff;--accent2:#9a63ff;--green:#29d49a;--red:#ff687d}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:radial-gradient(ellipse at 15% 0%,#1a2450 0,transparent 38%),radial-gradient(ellipse at 100% 30%,#241443 0,transparent 35%),var(--bg);color:var(--text);min-height:100vh;padding:28px 16px 50px}
-.wrap{width:min(100%,900px);margin:auto}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;box-shadow:0 8px 24px #6d7cff44}
-.logo svg{width:25px;fill:white}
-.brand h1{font-size:19px;letter-spacing:-.5px}.brand p{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:1.6px}
-.pill{border:1px solid #31405b;color:#b9c7ff;border-radius:99px;padding:8px 12px;font-size:11px;font-weight:700}
-.hero{text-align:center;margin:20px 0 26px}.hero h2{font-size:clamp(25px,5vw,38px);letter-spacing:-1.2px}.hero h2 span{background:linear-gradient(90deg,#91a4ff,#c38cff);background-clip:text;color:transparent}.hero p{color:var(--muted);font-size:13px;margin-top:9px}
-.panel{background:linear-gradient(180deg,#141e31f2,#0e1727f5);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 22px 65px #0005}
-.drop{min-height:220px;border:2px dashed #3c4d6b;border-radius:18px;background:#0b1423;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;cursor:pointer;transition:.2s;position:relative}
-.drop:hover,.drop.drag{border-color:#8b8fff;background:#151d38}
-.drop svg{width:52px;height:52px;fill:#9ba8ff;margin-bottom:13px}
-.drop strong{font-size:15px}.drop p{font-size:12px;color:var(--muted);margin-top:7px}.drop small{font-size:10px;color:#71829d;margin-top:12px}
-#file{display:none}
-.file-name{font-size:12px;color:#aebaff;margin-top:10px;word-break:break-all}
-.actions{display:flex;gap:10px;margin-top:16px}
-button{font:inherit;cursor:pointer;border:0}
-.primary{flex:1;padding:15px 18px;border-radius:13px;background:linear-gradient(110deg,var(--accent),var(--accent2));color:white;font-weight:800;font-size:14px;box-shadow:0 9px 24px #756dff38;transition:.2s}
-.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}.primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.secondary{padding:14px 17px;border-radius:13px;background:#1b2940;border:1px solid #34445f;color:#d7e1f4;font-weight:600}
-.progress{height:6px;background:#202d43;border-radius:10px;margin-top:16px;overflow:hidden;display:none}.bar{height:100%;width:0;background:linear-gradient(90deg,#6d7cff,#b16bff);transition:width .25s}
-.status{font-size:12px;color:var(--muted);margin-top:10px;min-height:17px}.status.ok{color:var(--green)}.status.err{color:var(--red)}
-.result{display:none;margin-top:22px;border-top:1px solid var(--line);padding-top:22px}
-.result h3,.history-head h3{font-size:15px;margin-bottom:14px}
-.preview-wrap{background:#080e19;border:1px solid var(--line);border-radius:15px;padding:10px;margin-bottom:16px;text-align:center}
-.preview{max-width:100%;max-height:320px;object-fit:contain;border-radius:9px}
-.field{margin-top:13px}.field label{display:block;font-size:11px;color:#a9b8d0;font-weight:700;margin:0 0 7px 2px}
-.copyrow{display:flex;gap:8px;background:#0a1220;border:1px solid #2a3951;border-radius:11px;padding:5px}
-.copyrow input{min-width:0;flex:1;background:transparent;border:0;outline:0;color:#dce7fb;padding:9px;font-size:11px}
-.copy{background:#253452;color:#dce6ff;border-radius:8px;padding:9px 12px;font-size:11px;font-weight:700;white-space:nowrap}.copy:active{transform:scale(.97)}
-.history{margin-top:22px}.history-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.history-head h3{margin:0}
-.clear{background:transparent;color:#ff8b9b;font-size:11px;font-weight:700;padding:8px}
-.history-list{display:grid;gap:10px}
-.item{display:flex;align-items:center;gap:12px;background:#0b1423;border:1px solid var(--line);border-radius:13px;padding:10px}
-.thumb{width:54px;height:54px;border-radius:9px;object-fit:cover;background:#202c40}
-.item-info{flex:1;min-width:0}.item-info strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.item-info span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
-.item-actions{display:flex;gap:6px}.mini{padding:8px 9px;border-radius:8px;background:#24334e;color:#dbe5f8;font-size:10px;font-weight:700}.del{background:#3a202d;color:#ff9eaa}
-.empty{text-align:center;color:#71819a;font-size:12px;padding:20px 8px}
-.footer{text-align:center;color:#71819a;font-size:10px;margin-top:20px}
-@media(max-width:560px){body{padding:18px 12px 35px}.panel{padding:15px;border-radius:18px}.top{margin-bottom:20px}.pill{font-size:9px}.drop{min-height:190px}.actions{flex-direction:column}.secondary{width:100%}.item{gap:8px}.thumb{width:46px;height:46px}.mini{padding:8px 7px}.hero{margin:15px 0 20px}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <div class="logo"><svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2ZM8.5 8A1.5 1.5 0 1 1 8.5 5a1.5 1.5 0 0 1 0 3ZM5 18l4.5-6 3 4 2-2.5L19 18Z"/></svg></div>
-      <div><h1>RS Image Host</h1><p>UPLOAD · HOST · SHARE</p></div>
-    </div>
-    <span class="pill">PRO IMAGE HOSTING</span>
-  </header>
-
-  <section class="hero">
-    <h2>Host your images <span>in seconds.</span></h2>
-    <p>Upload an image and get a shareable direct link instantly.</p>
-  </section>
-
-  <main class="panel">
-    <label class="drop" id="drop">
-      <input id="file" type="file" accept="image/*">
-      <svg viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 5.35 8.04 6 6 0 0 0 6 20h13a5 5 0 0 0 .35-9.96ZM13 14v4h-2v-4H8l4-4 4 4h-3Z"/></svg>
-      <strong id="dropTitle">Choose an image or drag it here</strong>
-      <p>Tap to browse files from your device</p>
-      <small>JPG · PNG · GIF · WEBP · Image files only</small>
-      <span class="file-name" id="fileName"></span>
-    </label>
-
-    <div class="actions">
-      <button class="primary" id="uploadBtn" disabled>Upload Image</button>
-      <button class="secondary" id="resetBtn" type="button">Choose Another</button>
-    </div>
-    <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
-    <p class="status" id="status" role="status">Select an image to get started.</p>
-
-    <section class="result" id="result">
-      <h3><span style="color:var(--green)">✓</span> Upload complete</h3>
-      <div class="preview-wrap"><img class="preview" id="preview" alt="Uploaded image preview"></div>
-      <div class="field"><label>DIRECT IMAGE URL</label><div class="copyrow"><input id="direct" readonly><button class="copy" data-copy="direct">COPY</button></div></div>
-      <div class="field"><label>HTML IMAGE CODE</label><div class="copyrow"><input id="htmlCode" readonly><button class="copy" data-copy="htmlCode">COPY</button></div></div>
-      <div class="field"><label>MARKDOWN IMAGE LINK</label><div class="copyrow"><input id="markdown" readonly><button class="copy" data-copy="markdown">COPY</button></div></div>
-      <div class="field"><label>BBCode</label><div class="copyrow"><input id="bbcode" readonly><button class="copy" data-copy="bbcode">COPY</button></div></div>
-    </section>
-  </main>
-
-  <section class="panel history">
-    <div class="history-head"><h3>Recent Uploads</h3><button class="clear" id="clearHistory">CLEAR HISTORY</button></div>
-    <div class="history-list" id="historyList"><div class="empty">Your uploaded images will appear here.</div></div>
-  </section>
-  <footer class="footer">© <span id="year"></span> RS IMAGE HOST · Powered by ImgBB</footer>
-</div>
-
-<script>
-(() => {
-  // Keep your existing ImgBB API key. For production, move it to a server-side proxy.
-  const API_KEY = 'https://api.imgbb.com/1/upload';
-  const HISTORY_KEY = 'rs_image_host_history_v1';
-  const $ = id => document.getElementById(id);
-  const fileInput = $('file'), drop = $('drop'), uploadBtn = $('uploadBtn');
-  const status = $('status'), progress = $('progress'), bar = $('bar');
-  let selectedFile = null;
-  $('year').textContent = new Date().getFullYear();
-
-  function setStatus(message, type='') {
-    status.textContent = message;
-    status.className = 'status ' + type;
-  }
-  function validImage(file) {
-    if (!file) return false;
-    if (!file.type.startsWith('image/')) { setStatus('Please select a valid image file.', 'err'); return false; }
-    if (file.size > 32 * 1024 * 1024) { setStatus('Image is too large. Maximum allowed size is 32 MB.', 'err'); return false; }
-    return true;
-  }
-  function chooseFile(file) {
-    if (!validImage(file)) return;
-    selectedFile = file;
-    $('fileName').textContent = file.name + ' · ' + (file.size / 1024 / 1024).toFixed(2) + ' MB';
-    $('dropTitle').textContent = 'Image selected successfully';
-    uploadBtn.disabled = false;
-    setStatus('Ready to upload.');
-  }
-  fileInput.addEventListener('change', () => chooseFile(fileInput.files[0]));
-  $('resetBtn').addEventListener('click', () => {
-    fileInput.click();
-  });
-  ['dragenter','dragover'].forEach(evt => drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.add('drag'); }));
-  ['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.remove('drag'); }));
-  drop.addEventListener('drop', e => {
-    const file = e.dataTransfer.files[0];
-    chooseFile(file);
-  });
-
-  function getHistory() {
-    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
-    catch { return []; }
-  }
-  function saveHistory(list) {
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0,30))); }
-    catch { setStatus('Upload worked, but browser storage is full. Clear some history.', 'err'); }
-    renderHistory();
-  }
-  function renderHistory() {
-    const list = getHistory(), root = $('historyList');
-    root.innerHTML = '';
-    if (!list.length) { root.innerHTML = '<div class="empty">Your uploaded images will appear here.</div>'; return; }
-    list.forEach((item, index) => {
-      const row = document.createElement('div'); row.className = 'item';
-      const img = document.createElement('img'); img.className = 'thumb'; img.src = item.thumb || item.url; img.alt = '';
-      const info = document.createElement('div'); info.className = 'item-info';
-      const name = document.createElement('strong'); name.textContent = item.name || 'Uploaded image';
-      const date = document.createElement('span'); date.textContent = item.date || '';
-      info.append(name,date);
-      const actions = document.createElement('div'); actions.className = 'item-actions';
-      const copy = document.createElement('button'); copy.className = 'mini'; copy.textContent = 'COPY';
-      copy.addEventListener('click', () => copyText(item.url, copy));
-      const del = document.createElement('button'); del.className = 'mini del'; del.textContent = '×';
-      del.title = 'Remove from this browser history';
-      del.addEventListener('click', () => { const next = getHistory(); next.splice(index,1); saveHistory(next); });
-      actions.append(copy,del); row.append(img,info,actions); root.append(row);
-    });
-  }
-  function showResult(data, file) {
-    const url = data.data.url;
-    $('preview').src = data.data.display_url || url;
-    $('direct').value = url;
-    $('htmlCode').value = '<img src="' + url + '" alt="' + (file.name || 'image').replace(/"/g,'&quot;') + '">';
-    $('markdown').value = '![' + (file.name || 'image').replace(/[\[\]]/g,'') + '](' + url + ')';
-    $('bbcode').value = '[img]' + url + '[/img]';
-    $('result').style.display = 'block';
-    const history = getHistory();
-    history.unshift({url, thumb:data.data.thumb?.url || url, name:file.name, date:new Date().toLocaleString()});
-    saveHistory(history);
-    setStatus('Your image is hosted successfully.', 'ok');
-  }
-
-  uploadBtn.addEventListener('click', async () => {
-    if (!selectedFile || uploadBtn.disabled) return;
-    uploadBtn.disabled = true;
-    uploadBtn.textContent = 'Uploading…';
-    progress.style.display = 'block'; bar.style.width = '15%';
-    $('result').style.display = 'none';
-    setStatus('Uploading your image securely…');
-    const form = new FormData();
-    form.append('image', selectedFile);
-    try {
-      bar.style.width = '45%';
-      const response = await fetch('https://api.imgbb.com/1/upload?key=' + encodeURIComponent(API_KEY), {method:'POST', body:form});
-      bar.style.width = '85%';
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.error?.message || 'Upload failed. Please try again.');
-      bar.style.width = '100%';
-      showResult(data, selectedFile);
-      uploadBtn.textContent = 'Upload Another Image';
-    } catch (err) {
-      setStatus(err.message || 'Connection error. Check your internet and try again.', 'err');
-      uploadBtn.textContent = 'Try Again';
-      uploadBtn.disabled = false;
-      bar.style.width = '0%';
-    }
-  });
-
-  async function copyText(value, button) {
-    try {
-      if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(value);
-      else {
-        const temp = document.createElement('textarea'); temp.value = value; document.body.appendChild(temp);
-        temp.select(); document.execCommand('copy'); temp.remove();
-      }
-      const old = button.textContent; button.textContent = 'COPIED ✓';
-      setTimeout(() => button.textContent = old, 1500);
-    } catch { setStatus('Could not copy automatically. Please select and copy the text.', 'err'); }
-  }
-  document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', () => copyText($(btn.dataset.copy).value, btn)));
-  $('clearHistory').addEventListener('click', () => {
-    if (confirm('Remove all upload records from this browser? This does not delete images from ImgBB.')) {
-      localStorage.removeItem(HISTORY_KEY); renderHistory();
-    }
-  });
-  renderHistory();
-})();
-</script>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Premium Image Uploader</title> <style> @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */ }
+body { /* Premium soft gradient background */ background: linear-gradient(135deg, #e2e2e2 0%, #f5f7fa 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+.app-card { width: 100%; max-width: 380px; background: #ffffff; border-radius: 24px; padding: 30px 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); text-align: center; position: relative; overflow: hidden; }
+.header h2 { font-size: 22px; color: #1e293b; font-weight: 600; margin-bottom: 5px; }
+.header p { font-size: 13px; color: #64748b; margin-bottom: 25px; }
+/* Modern Drag & Drop / Upload Box */ .upload-area { border: 2px dashed #cbd5e1; border-radius: 18px; padding: 40px 20px; background-color: #f8fafc; cursor: pointer; transition: all 0.3s ease; margin-bottom: 20px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.upload-area:hover, .upload-area.active { border-color: #6366f1; background-color: #eef2ff; }
+.upload-area svg { width: 45px; height: 45px; fill: #818cf8; margin-bottom: 12px; transition: transform 0.3s ease; }
+.upload-area:hover svg { transform: translateY(-5px); }
+.upload-area span { font-size: 14px; color: #475569; font-weight: 500; pointer-events: none; }
+.upload-area #fileName { font-size: 12px; color: #6366f1; margin-top: 5px; font-weight: 600; display: none; }
+#imageInput { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; top: 0; left: 0; z-index: 10; }
+/* Premium Gradient Button */ .primary-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35); transition: transform 0.2s, box-shadow 0.2s; outline: none; }
+.primary-btn:active { transform: translateY(2px); box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3); }
+.primary-btn:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; transform: none; }
+/* Result Section */ .result-box { display: none; margin-top: 25px; animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.preview-img { width: 100%; height: 190px; object-fit: cover; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.link-container { display: flex; background: #f1f5f9; border-radius: 14px; padding: 6px; align-items: center; border: 1px solid #e2e8f0; }
+.link-container input { flex: 1; background: transparent; border: none; padding: 12px 15px; font-size: 13px; color: #334155; outline: none; width: 100%; }
+.copy-btn { background: #ffffff; color: #6366f1; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; }
+.copy-btn:active { background: #f8fafc; transform: scale(0.95); } </style></head><body>
+<div class="app-card"> <div class="header"> <h2>Upload Media</h2> <p>Get a direct link instantly</p> </div>
+<div class="upload-area" id="uploadArea"> <input type="file" id="imageInput" accept="image/*"> <!-- Custom Cloud SVG Icon --> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"> <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/> </svg> <span id="uploadText">Tap to select an image</span> <span id="fileName"></span> </div>
+<button class="primary-btn" id="uploadBtn">Upload Image</button>
+<div class="result-box" id="resultContainer"> <img id="imagePreview" class="preview-img" alt="Uploaded Preview"> <div class="link-container"> <input type="text" id="directLink" readonly> <button class="copy-btn" id="copyBtn">Copy</button> </div> </div> </div>
+<script> const API_KEY = '190f2069ac3b08bcdc6818d9023274ec'; // আপনার ImgBB API const imageInput = document.getElementById('imageInput'); const uploadArea = document.getElementById('uploadArea'); const uploadText = document.getElementById('uploadText'); const fileNameDisplay = document.getElementById('fileName'); const uploadBtn = document.getElementById('uploadBtn'); const resultContainer = document.getElementById('resultContainer'); const directLinkInput = document.getElementById('directLink'); const copyBtn = document.getElementById('copyBtn'); const imagePreview = document.getElementById('imagePreview');
+// ফাইল সিলেক্ট করলে UI তে ফাইলের নাম দেখানো হবে imageInput.addEventListener('change', (e) => { const file = e.target.files[0]; if (file) { uploadArea.classList.add('active'); uploadText.innerText = 'Image Selected'; fileNameDisplay.innerText = file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name; fileNameDisplay.style.display = 'block'; } else { uploadArea.classList.remove('active'); uploadText.innerText = 'Tap to select an image'; fileNameDisplay.style.display = 'none'; } });
+uploadBtn.addEventListener('click', async () => { const file = imageInput.files[0]; if (!file) { alert('Please select an image first!'); return; }
+// বাটনের এনিমেশন ও টেক্সট পরিবর্তন uploadBtn.innerText = 'Uploading... ⏳'; uploadBtn.disabled = true; resultContainer.style.display = 'none';
+const formData = new FormData(); formData.append('image', file); formData.append('key', API_KEY);
+try { const response = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
+const data = await response.json();
+if (data.success) { directLinkInput.value = data.data.url; imagePreview.src = data.data.url; // রেজাল্ট বক্স শো করানো resultContainer.style.display = 'block'; uploadBtn.innerText = 'Upload Successful! 🎉'; // কিছুক্ষণ পর আবার বাটন রিসেট setTimeout(() => { uploadBtn.innerText = 'Upload New Image'; uploadBtn.disabled = false; // ইনপুট রিসেট imageInput.value = ''; uploadArea.classList.remove('active'); uploadText.innerText = 'Tap to select an image'; fileNameDisplay.style.display = 'none'; }, 3000);
+} else { alert('Upload failed: ' + data.error.message); uploadBtn.innerText = 'Upload Image'; uploadBtn.disabled = false; } } catch (error) { alert('Connection error! Check your internet.'); uploadBtn.innerText = 'Upload Image'; uploadBtn.disabled = false; } });
+// স্মার্ট কপি বাটন copyBtn.addEventListener('click', () => { directLinkInput.select(); directLinkInput.setSelectionRange(0, 99999); navigator.clipboard.writeText(directLinkInput.value).then(() => { copyBtn.innerText = 'Copied! ✔'; copyBtn.style.color = '#10b981'; // Success Green Color setTimeout(() => { copyBtn.innerText = 'Copy'; copyBtn.style.color = '#6366f1'; // Original Purple Color }, 2000); }).catch(err => { // Fallback for older browsers document.execCommand('copy'); copyBtn.innerText = 'Copied!'; }); }); </script></body></html>
